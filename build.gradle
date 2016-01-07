@@ -1,0 +1,131 @@
+// Markdown Javadoc
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
+    }
+    dependencies {
+        classpath 'ch.raffael.pegdown-doclet:pegdown-doclet:1.2'
+        classpath 'com.moowork.gradle:gradle-node-plugin:0.11'
+    }
+}
+
+
+apply plugin: 'ch.raffael.pegdown-doclet'
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'idea'
+apply plugin: 'application'
+apply plugin: 'com.moowork.node'
+
+sourceCompatibility = '1.8'
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.glassfish.jersey.containers:jersey-container-servlet:+"
+    compile "org.glassfish.jersey.media:jersey-media-json-jackson:+"
+    compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.6.4"
+    compile "org.glassfish.jersey.containers:jersey-container-grizzly2-http:+"
+
+    compile "org.glassfish.grizzly:grizzly-websockets-server:2.3.22"
+
+    compile "org.jsoup:jsoup:1.7.2"
+    compile "net.htmlparser.jericho:jericho-html:3.4"
+    compile 'net.sourceforge.cssparser:cssparser:0.9.18'
+    compile "com.github.jknack:handlebars:4.0.1"
+    compile "com.github.jknack:handlebars-jackson2:4.0.1"
+    compile "com.google.guava:guava:19.0"
+
+    compile "org.aeonbits.owner:owner-java8:1.0.8"
+    compile "org.reflections:reflections:0.9.10"
+    compile "org.javassist:javassist:3.20.0-GA"
+
+    compile "org.slf4j:slf4j-nop:1.7.13"
+}
+
+// Run the idea task to download Sources and Javadoc for dependencies
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+node {
+    workDir = file('temp')
+    nodeModulesDir = file('/src/main/resources')
+    download = true;
+}
+
+sourceSets {
+    main {
+        resources {
+            exclude 'node_modules/**'
+            exclude 'buildfiles/**'
+            exclude '*.js'
+            exclude '*.json'
+            exclude '*.css'
+        }
+    }
+}
+
+jar {
+    dependsOn 'webpack'
+    manifest {
+        attributes 'Bundle-Name': 'Email Template Processor',
+            'Bundle-Version': "1.0",
+            'Bundle-Date': new Date(),
+            'Build-By': System.getProperty('user.name'),
+            'Build-JDK': System.getProperty('java.version'),
+            'Build-Host': java.net.InetAddress.getLocalHost().getHostName(),
+            'Gradle-Version': GradleVersion.current().toString(),
+            'GitBranch': System.env.GIT_BRANCH ?: 'NOT SET',
+            'GitCommit': System.env.GIT_COMMIT ?: 'NOT SET',
+            'Main-Class': 'ws.doerr.cssinliner.Launcher'
+    }
+}
+
+startScripts {
+    mainClassName 'ws.doerr.cssinliner.Launcher'
+}
+
+task webpack(type: Exec) {
+    workingDir 'src/main/resources'
+    args = ['webpack']
+    commandLine 'cmd', '/c', 'webpack'
+}
+
+task copyLauncher(type: Copy) {
+    from 'src/main/resources/buildfiles'
+    into 'build/libs'
+}
+
+task fatjar(dependsOn: 'copyLauncher', type: Jar) {
+
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+run {
+    args "-i", "G:\\github\\ClearContract\\MandrillTemplates\\src\\main\\java", "-d", "G:\\github\\ClearContract\\MandrillTemplates\\test\\data"
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'ws.doerr.cssinliner.Launcher'
+    standardInput = System.in
+}
+
+task(debug, dependsOn: ['classes', 'webpack'], type: JavaExec) {
+    args "-i", "G:\\github\\ClearContract\\MandrillTemplates\\src\\main\\java", "-d", "G:\\github\\ClearContract\\MandrillTemplates\\test\\data"
+    //args "-cl", "G:\\github\\ClearContract\\MandrillTemplates\\src\\main\\java\\collab-new.html"
+
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'ws.doerr.cssinliner.Launcher'
+    debug true
+    standardInput = System.in
+}

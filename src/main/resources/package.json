@@ -1,0 +1,34 @@
+{
+    "name": "CssInliner-UI",
+    "version": "0.0.1",
+    "description": "Web frontend for CssInliner interactive mode",
+    "main": "index.js",
+    "author": "greg@doerr.ws",
+    "license": "MIT",
+    "devDependencies": {
+        "bundle-loader": "^0.5.0",
+        "css-loader": "^0.9.0",
+        "file-loader": "^0.7.2",
+        "less": "^1.7.5",
+        "less-loader": "^0.7.7",
+        "style-loader": "^0.8.0",
+        "url-loader": "^0.5.5",
+        "json-loader": "~0.5.4",
+        "expose-loader": "latest",
+        "imports-loader": "latest",
+        "webpack": "latest"
+    },
+    "dependencies": {
+        "jquery": "latest",
+        "angular": "^1.4.7",
+        "angular-sanitize": "latest",
+        "angular-messages": "^1.4.7",
+        "angular-animate": "^1.4.7",
+        "angular-aria": "^1.4.7",
+        "angular-material": "^1.0.0",
+        "moment": "latest",
+        "angular-moment": "1.0.0-beta.2",
+        "moment-timezone": "latest",
+        "angular-websocket": "latest"
+    }
+}

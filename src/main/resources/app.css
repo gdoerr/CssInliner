@@ -1,0 +1,95 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/*
+    Created on : Dec 27, 2015, 2:48:57 PM
+    Author     : greg
+*/
+
+/* remove outline on icons */
+md-icon:focus, div:focus {
+    outline: 0;
+}
+
+div.full-height, md-content.full-height {
+    height: 100%
+}
+
+clr-iframe {
+    display: block;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+clr-iframe iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+.list-item {
+    font-size: 13px;
+}
+
+.list-item .label {
+    text-align: right;
+}
+
+.list-item .content {
+    color: #808080;
+    margin-left: 8px;
+    overflow: hidden;
+    word-wrap: break-word;
+}
+
+div[ng-click] {
+    cursor: pointer;
+}
+
+div.doc-list {
+    margin-bottom: 1em;
+    padding: 4px;
+    font-size: 13px;
+}
+
+div.doc-list.selected {
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 13px;
+}
+
+.hide-no-select {
+    display: none;
+}
+
+.selected .hide-no-select {
+    display: block;
+}
+
+.has-error {
+    color: red;
+}
+
+.updated {
+    background-color: lightgray;
+}
+
+.preview-title {
+    text-align: center;
+    font-weight: 700;
+    margin: 1em 0;
+}
+
+.preview-wrapper {
+    height: calc(100% - 100px);
+}
+
+.preview-content {
+    height: 100%;
+    padding: 1px;
+    margin-right: 5px;
+}
