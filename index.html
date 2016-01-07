@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Cssinliner by gdoerr</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Cssinliner</h1>
+        <h2>Css Inliner Tool for Html Email Templates</h2>
+        <a href="https://github.com/gdoerr/CssInliner" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a id="cssinliner" class="anchor" href="#cssinliner" aria-hidden="true"><span class="octicon octicon-link"></span></a>CssInliner</h1>
+
+<p>Css Inliner Tool for Html Email Templates</p>
+
+<p>I was working on a customer project that required the sending of emails. I had worked with MailChimp previously and knew that
+they had an email service, Mandrill, that supported templates and had recently added support for Handlebars to
+support merging of variable content into the template.</p>
+
+<p>While developing the templates, I was struck by the lack of available tooling to to simplify not only the process
+of creating the templates but also for maintaining them long term. In order to simplify my life and to make
+ongoing maintenance easier, I decided to create my own solution.</p>
+
+<p>I identified a couple of key goals:</p>
+
+<ul>
+<li>
+<em>Template Support</em> - rather than duplicating the markup for email in every single email, support the use of
+templates that contain the boilerplate markup</li>
+<li>
+<em>HTML Import</em> - have the ability to import canned sections of html, preferably with parameters</li>
+<li>
+<em>CSS Inlining</em> - make coding and maintenance easier by supporting css styling. The tool should handle
+the process to change the css classes to inline styles. This should be selective and still allow css styles
+to be present in the final document for optimal rendering across different email renderers</li>
+<li>
+<em>Merged Preview</em> - provide a preview of the processed emails merged with sample data</li>
+<li>
+<em>Real time</em> - I didn't want to create an editor, I want to be able to use whatever editor I want. Real-time preview should
+provide a rendered view of the final document that is automatically updated whenever it or any of it's dependencies are updated</li>
+</ul>
+
+<p><strong>CssInliner</strong> provides the above functionality through a single jar. The tool can be run in either batch mode
+to process various templates into the final html email documents or interactively supporting live preview of the processed documents through a web browser.</p>
+
+<h1>
+<a id="syntax" class="anchor" href="#syntax" aria-hidden="true"><span class="octicon octicon-link"></span></a>Syntax</h1>
+
+<h3>
+<a id="templates" class="anchor" href="#templates" aria-hidden="true"><span class="octicon octicon-link"></span></a>Templates</h3>
+
+<p>Using a syntax similar to Java Server Faces, you construct a template as a normal HTML document. This document would include your stylesheets along with any markup required to render the basic email layout.</p>
+
+<p>In the template, mark areas where content will be inserted with <code>&lt;ui:include section="section name" /&gt;</code>. When generating the final document, this tag will be replaced by the content provided by a specific email document.</p>
+
+<p>The <code>&lt;head&gt;</code> section of the final document is created by merging the head section of the template with the head section of the email document. In the case of element conflicts, elements from the email document take precedence over the template.</p>
+
+<pre><code>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml"&gt;
+    &lt;head&gt;
+        &lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /&gt;
+        &lt;link rel="stylesheet" href="fragments/normal styles.css"/&gt;
+        &lt;link rel="stylesheet" href="fragments/inline styles.css" ui:inline /&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        ... (body formatting)
+        &lt;ui:include section="header" /&gt;
+        ... (more formatting)
+        &lt;ui:include section="content" /&gt;
+        ... (final formatting)
+    &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p>Notice from this sample the inclusion of two style sheets. The first one will be read and be included as css classes defined directly in the head of the final document. The second one will be read and have the resulting styles applied inline on the appropriate DOM elements. The stylesheet content will not be present in the final document. The stylesheets require no special formatting. I considered supporting advanced css formats like sass or less but given that all styles need to be inlined I believe the more verbose css style is more appropriate here.</p>
+
+<h3>
+<a id="email-documents" class="anchor" href="#email-documents" aria-hidden="true"><span class="octicon octicon-link"></span></a>Email documents</h3>
+
+<p>Email templates are also normal html document formatted to reference the template and to identify the content that is to be inserted into the template.</p>
+
+<pre><code>&lt;html ui:template="fragments/template.tmpl"&gt;
+    &lt;head&gt;
+        &lt;title&gt;My Email Title&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;ui:section name="header"&gt;
+            &lt;strong&gt;My Email&lt;/strong&gt; Title
+        &lt;/ui:section&gt;
+
+        &lt;ui:section name="content"&gt;
+            &lt;p&gt;This is the body of my email.&lt;/p&gt;
+        &lt;/ui:section&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p>This document, when processed, will render a complete HTML document ready for publishing to pretty much any email service that supports templates.</p>
+
+<h3>
+<a id="html-fragments" class="anchor" href="#html-fragments" aria-hidden="true"><span class="octicon octicon-link"></span></a>HTML Fragments</h3>
+
+<p>Often times when constructing emails, you will use common markup segments either multiple times in the same document and/or across multiple documents. Also, in order to support proper rendering, it's nice to be able encapsulate certain content like buttons that require unique syntax to support clients such as Outlook. This is what <strong>HTML Fragments</strong> are for.</p>
+
+<p>Below is a simple fragment that can be imported into a document. It defines three parameters:</p>
+
+<ul>
+<li>
+<code>imageclass</code> - which is the class that should be applied to the img element</li>
+<li>
+<code>imageurl</code> - which is the url that should be applied to the img elements <code>src</code> attribute</li>
+<li>
+<code>content</code> - which is the content that should be included in the table element cell</li>
+</ul>
+
+<pre><code>&lt;tr class="padding-top"&gt;
+    &lt;td class="image-container"&gt;
+        &lt;img width="64" height="64"&gt;
+            &lt;parameter name="imageclass" attr="class" /&gt;
+            &lt;parameter name="imageurl" attr="src" /&gt;
+        &lt;/img&gt;
+    &lt;/td&gt;
+    &lt;td&gt;
+        &lt;parameter name="content" /&gt;
+    &lt;/td&gt;
+&lt;/tr&gt;
+</code></pre>
+
+<p>Notice that we support both content parameters as well as parameters that apply an attribute to their enclosing element. After processing, the <code>parameter</code> tags are removed from the document.</p>
+
+<p>We can now go back to our original email document and include this fragment.</p>
+
+<pre><code>    &lt;ui:section name="content"&gt;
+        &lt;link rel="fragment.inc"&gt;
+            &lt;parameter name="imageclass"&gt;avatar&lt;/parameter&gt;
+            &lt;parameter name="imageurl"&gt;http://static.cdn.com/image.png&lt;/parameter&gt;
+            &lt;parameter name="content"&gt;
+                &lt;p&gt;This is the body of my email.&lt;/p&gt;
+            &lt;/parameter&gt;
+        &lt;/link&gt;
+    &lt;/ui:section&gt;
+</code></pre>
+
+<h3>
+<a id="mandrill-specific-items" class="anchor" href="#mandrill-specific-items" aria-hidden="true"><span class="octicon octicon-link"></span></a>Mandrill Specific items</h3>
+
+<p>While the code base is set up to support multiple email services, it only includes support for Mandrill at this time. Mandrill specific items:</p>
+
+<ul>
+<li>
+<code>&lt;meta name="mandrill-template" content="My Email Name" /&gt;</code> specify the name that Mandrill should use for the template</li>
+<li>
+<code>&lt;meta name="mandrill-labels" content="PROGRAM1 OPTIONA" /&gt;</code> specify the tags Mandrill should associate with the template</li>
+<li>Extended Handlebars <code>if</code> support. This is not complete yet and not compatible with Mandrill's syntax - <strong>work in progress</strong>
+</li>
+</ul>
+
+<h1>
+<a id="build-instructions" class="anchor" href="#build-instructions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Build Instructions</h1>
+
+<p>CssInliner uses <a href="http://gradle.org">Gradle</a> and <a href="https://webpack.github.io/">Webpack</a> to build the application. Gradle handles the overall build
+and webpack handles the html/javascript side for Interactive mode.</p>
+
+<p>Dependencies</p>
+
+<ul>
+<li>Gradle 2.10 or later</li>
+<li>Node / Npm</li>
+</ul>
+
+<p>Build Steps</p>
+
+<ul>
+<li>
+<code>gradle npmInstall</code> installs npm dependencies</li>
+<li>
+<code>gradle build</code> builds a normal jar</li>
+<li>
+<code>gradle fatjar</code> builds a jar with all dependencies</li>
+</ul>
+
+<h1>
+<a id="future-plans" class="anchor" href="#future-plans" aria-hidden="true"><span class="octicon octicon-link"></span></a>Future Plans</h1>
+
+<ul>
+<li>Prettier UI</li>
+<li>Extract the Inliner code to a separate repository</li>
+<li>Release my Gradle plugin for deploying templates to Mandrill
+
+<ul>
+<li>Publish the plugin to the Gradle plugin repo</li>
+</ul>
+</li>
+<li>Fully support Mandrill handlebars <a href="https://mandrill.zendesk.com/hc/en-us/articles/205582537-Using-Handlebars-for-Dynamic-Content">unique syntax items</a>
+
+<ul>
+<li>There are some funky syntax in Mandrill Handlebars that doesn't even make past the initial handlebars parse. Any <a href="https://github.com/jknack/handlebars.java">Java Handlebars</a> experts willing to lend a hand?</li>
+</ul>
+</li>
+<li>Add support for email platforms other than Mandrill</li>
+<li>Set up on CI service like <strong>Travis CI</strong>
+</li>
+<li>Publish artifacts to Maven Central</li>
+<li>Publish to Mandrill from Preview and Command Line</li>
+<li>Integrate with github for storage of template source</li>
+</ul>
+
+<h1>
+<a id="acknowledgements" class="anchor" href="#acknowledgements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Acknowledgements</h1>
+
+<ul>
+<li><a href="https://github.com/jhy/jsoup">Jsoup HTML Parser</a></li>
+<li><a href="http://cssparser.sourceforge.net/">CSS Parser</a></li>
+<li>
+<a href="https://grizzly.java.net/">Grizzly</a> Http Server / Websockets</li>
+<li>
+<a href="https://jersey.java.net/">Jersey</a> REST API for real time viewer</li>
+<li>
+<a href="https://github.com/FasterXML/jackson">Jackson</a> JSON formatting</li>
+<li><a href="https://github.com/jknack/handlebars.java">Java Handlebars</a></li>
+<li><a href="https://angularjs.org/">Angular</a></li>
+<li><a href="https://material.angularjs.org/latest/">Angular Material</a></li>
+<li><a href="http://momentjs.com/">Moment</a></li>
+<li><a href="https://github.com/urish/angular-moment">Angular Moment</a></li>
+</ul>
+
+<p>Please contact me if you're interested in contributing.</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/gdoerr/CssInliner/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/gdoerr/CssInliner/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/gdoerr/CssInliner"></a> is maintained by <a href="https://github.com/gdoerr">gdoerr</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
