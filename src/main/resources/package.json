@@ -28,7 +28,6 @@
         "angular-material": "^1.0.0",
         "moment": "latest",
         "angular-moment": "1.0.0-beta.2",
-        "moment-timezone": "latest",
-        "angular-websocket": "latest"
+        "moment-timezone": "latest"
     }
 }
