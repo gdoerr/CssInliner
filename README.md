@@ -7,20 +7,20 @@ support merging of variable content into the template.
 
 While developing the templates, I was struck by the lack of available tooling to to simplify not only the process
 of creating the templates but also for maintaining them long term. In order to simplify my life and to make
-ongoing maintenance easier, I decided to create my own solition.
+ongoing maintenance easier, I decided to create my own solution.
 
 I identified a couple of key goals:
 * *Template Support* - rather than duplicating the markup for email in every single email, support the use of
 templates that contain the boilerplate markup
-* *HTML Import* - have the ability to import canned sections of html, preferrably with parameters
+* *HTML Import* - have the ability to import canned sections of html, preferably with parameters
 * *CSS Inlining* - make coding and maintenance easier by supporting css styling. The tool should handle
 the process to change the css classes to inline styles. This should be selective and still allow css styles
 to be present in the final document for optimal rendering across different email renderers
 * *Merged Preview* - provide a preview of the processed emails merged with sample data
-* *Real time* - I didn't want to create an editor, I want to be able to use whatever editor I want
-to edit the various document pieces
+* *Real time* - I didn't want to create an editor, I want to be able to use whatever editor I want. Real-time preview should
+provide a rendered view of the final document that is automatically updated whenever it or any of it's dependencies are updated
 
-**CssInliner** provides the above functionallity through a single jar. The tool can be run in either batch mode
+**CssInliner** provides the above functionality through a single jar. The tool can be run in either batch mode
 to process various templates into the final html email documents or interactively supporting live preview of the processed documents through a web browser.
 
 # Syntax
@@ -106,6 +106,12 @@ We can now go back to our original email document and include this fragment.
         </link>
     </ui:section>
 ```
+
+### Mandrill Specific items
+While the code base is set up to support multiple email services, it only includes support for Mandrill at this time. Mandrill specific items:
+* `<meta name="mandrill-template" content="My Email Name" />` specify the name that Mandrill should use for the template
+* `<meta name="mandrill-labels" content="PROGRAM1 OPTIONA" />` specify the tags Mandrill should associate with the template
+* Extended Handlebars `if` support. This is not complete yet and not compatible with Mandrill's syntax - **work in progress**
 
 # Build Instructions
 
