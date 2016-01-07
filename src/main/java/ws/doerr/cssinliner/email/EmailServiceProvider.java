@@ -29,12 +29,18 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
- * @author greg
+ *  Abstract Email Service
  */
 public interface EmailServiceProvider {
-    void initialize();
     String sendEmail(List<String> to, String title, String content);
 
     default Map<String, Helper<?>> getHelpers() { return Collections.emptyMap(); }
+
+    public enum PublishStatus {
+        NO_CHANGE,
+        ADDED,
+        UPDATED
+    }
+
+    PublishStatus publish(String title, String html, Map<String, String> meta, String templateNamePrefix) throws Exception;
 }

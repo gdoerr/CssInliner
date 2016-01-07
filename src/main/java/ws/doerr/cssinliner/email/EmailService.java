@@ -47,7 +47,6 @@ public class EmailService {
             EmailConfiguration config = Configuration.get(EmailConfiguration.class);
             Class<?> providerClass = Class.forName(config.emailClassName);
             provider = (EmailServiceProvider) providerClass.newInstance();
-            provider.initialize();
         } catch(Exception ex) {
             LOG.log(Level.SEVERE, "Exception instantiating Email Service Provider", ex);
         }

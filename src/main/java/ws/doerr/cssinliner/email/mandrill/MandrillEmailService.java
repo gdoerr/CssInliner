@@ -23,14 +23,22 @@
  */
 package ws.doerr.cssinliner.email.mandrill;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.JsonNode;
 import ws.doerr.cssinliner.email.EmailServiceProvider;
 import ws.doerr.httpserver.Server;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.jknack.handlebars.Helper;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.client.Client;
@@ -39,6 +47,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.xml.bind.DatatypeConverter;
 import ws.doerr.configuration.Configuration;
 
 /**
@@ -49,13 +58,24 @@ public class MandrillEmailService implements EmailServiceProvider {
     private static final Logger LOG = Logger.getLogger(MandrillEmailService.class.getName());
 
     private static final String MANDRILL_URL = "https://mandrillapp.com/api/1.0/";
+    private static final String MANDRILL_UPDATETEMPLATE = "templates/update.json";
+    private static final String MANDRILL_ADDTEMPLATE = "templates/add.json";
+    private static final String MANDRILL_TEMPLATEINFO = "templates/info.json";
 
-    private WebTarget target;
+    private static final String META_TEMPLATE_NAME = "mandrill-template";
+    private static final String META_LABELS = "mandrill-labels";
 
+    private final WebTarget target;
     private final MandrillConfig config;
+    private final SimpleDateFormat formatter;
 
     public MandrillEmailService() {
+        formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+
         config = Configuration.get(MandrillConfig.class);
+        Client client = ClientBuilder.newClient();
+        target = client.target(MANDRILL_URL);
     }
 
     @Override
@@ -97,12 +117,6 @@ public class MandrillEmailService implements EmailServiceProvider {
         to1.put("type", "to");
     }
 
-    @Override
-    public void initialize() {
-        Client client = ClientBuilder.newClient();
-        target = client.target(MANDRILL_URL);
-    }
-
     private static final Map<String, Helper<?>> HELPERS = new HashMap<>();
     static {
         HELPERS.put("if", new MandrillIf());
@@ -111,5 +125,122 @@ public class MandrillEmailService implements EmailServiceProvider {
     @Override
     public Map<String, Helper<?>> getHelpers() {
         return HELPERS;
+    }
+
+    @Override
+    public PublishStatus publish(String title, String html, Map<String, String> meta, String templateNamePrefix) throws Exception {
+        try {
+            String templateName = templateNamePrefix + meta.get(META_TEMPLATE_NAME);
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+
+            // Get the hash from the current document
+            String hash = DatatypeConverter.printHexBinary(digest.digest(html.getBytes("UTF-8")));
+            String template = getTemplate(templateName);
+
+            String[] labels = new String[]{};
+            if(meta.containsKey(META_LABELS))
+                labels = meta.get(META_LABELS).split(",");
+
+            if(template == null) {
+                addTemplate(templateName, title, html, labels);
+                return PublishStatus.ADDED;
+            } else {
+                String templateHash = DatatypeConverter.printHexBinary(digest.digest(template.getBytes("UTF-8")));
+                if(templateHash.equals(hash))
+                    return PublishStatus.NO_CHANGE;
+
+                updateTemplate(templateName, title, html, labels);
+                return PublishStatus.UPDATED;
+            }
+
+        } catch(IOException ex) {
+            LOG.log(Level.SEVERE, "Exception communicating with Mandrill", ex);
+            throw ex;
+        } catch(NoSuchAlgorithmException ex) {
+            LOG.log(Level.SEVERE, "Exception getting SHA-256 digest instance", ex);
+            throw ex;
+        }
+    }
+
+    /**
+     * Json Utility Class - Mandrill Template Info Request
+     */
+    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+    static class MandrillInfoRequest {
+        String key;
+        String name;
+    }
+
+    private String getTemplate(String name) throws IOException {
+        MandrillInfoRequest request = new MandrillInfoRequest();
+        request.key = config.mandrillKey;
+        request.name = name;
+
+        Response rsp = target
+                .path(MANDRILL_TEMPLATEINFO)
+                .request()
+                .post(Entity.entity(request, MediaType.APPLICATION_JSON_TYPE));
+
+        if(rsp.getStatus() == 200) {
+            String json = rsp.readEntity(String.class);
+            JsonNode response = Server.getMapper().readTree(json);
+
+            return response.get("code").asText();
+        } else
+            return null;
+    }
+
+    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+    static class MandrillAddRequest {
+        String key;
+        String name;
+        String subject;
+        String code;
+        String[] labels;
+        boolean publish;
+    }
+
+    private boolean addTemplate(String templateName, String subject, String html, String[] keywords) {
+        MandrillAddRequest add = new MandrillAddRequest();
+        add.key = config.mandrillKey;
+        add.name = templateName;
+        add.subject = subject;
+        add.code = html;
+        add.labels = keywords;
+        add.publish = true;
+
+        Response rsp = target
+                .path(MANDRILL_ADDTEMPLATE)
+                .request()
+                .post(Entity.entity(add, MediaType.APPLICATION_JSON_TYPE));
+
+        if(rsp.getStatus() == 200)
+            return true;
+        else {
+            LOG.log(Level.INFO, "Mandrill Error rc = {0}", rsp.getStatusInfo().getReasonPhrase());
+            return false;
+        }
+    }
+
+    private boolean updateTemplate(String templateName, String subject, String html, String[] keywords) {
+        MandrillAddRequest add = new MandrillAddRequest();
+        add.key = config.mandrillKey;
+        add.name = templateName;
+        add.subject = subject;
+        add.code = html;
+        add.labels = keywords;
+        add.publish = true;
+
+        Response rsp = target
+                .path(MANDRILL_UPDATETEMPLATE)
+                .request()
+                .post(Entity.entity(add, MediaType.APPLICATION_JSON_TYPE));
+
+        if(rsp.getStatus() == 200)
+            return true;
+        else {
+            LOG.log(Level.INFO, "Mandrill Error rc = {0}", rsp.getStatusInfo().getReasonPhrase());
+            return false;
+        }
     }
 }
