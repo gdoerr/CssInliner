@@ -161,89 +161,6 @@ to process various templates into the final html email documents or interactivel
     &lt;/ui:section&gt;
 </code></pre>
 
-<h3>
-<a id="mandrill-specific-items" class="anchor" href="#mandrill-specific-items" aria-hidden="true"><span class="octicon octicon-link"></span></a>Mandrill Specific items</h3>
-
-<p>While the code base is set up to support multiple email services, it only includes support for Mandrill at this time. Mandrill specific items:</p>
-
-<ul>
-<li>
-<code>&lt;meta name="mandrill-template" content="My Email Name" /&gt;</code> specify the name that Mandrill should use for the template</li>
-<li>
-<code>&lt;meta name="mandrill-labels" content="PROGRAM1 OPTIONA" /&gt;</code> specify the tags Mandrill should associate with the template</li>
-<li>Extended Handlebars <code>if</code> support. This is not complete yet and not compatible with Mandrill's syntax - <strong>work in progress</strong>
-</li>
-</ul>
-
-<h1>
-<a id="build-instructions" class="anchor" href="#build-instructions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Build Instructions</h1>
-
-<p>CssInliner uses <a href="http://gradle.org">Gradle</a> and <a href="https://webpack.github.io/">Webpack</a> to build the application. Gradle handles the overall build
-and webpack handles the html/javascript side for Interactive mode.</p>
-
-<p>Dependencies</p>
-
-<ul>
-<li>Gradle 2.10 or later</li>
-<li>Node / Npm</li>
-</ul>
-
-<p>Build Steps</p>
-
-<ul>
-<li>
-<code>gradle npmInstall</code> installs npm dependencies</li>
-<li>
-<code>gradle build</code> builds a normal jar</li>
-<li>
-<code>gradle fatjar</code> builds a jar with all dependencies</li>
-</ul>
-
-<h1>
-<a id="future-plans" class="anchor" href="#future-plans" aria-hidden="true"><span class="octicon octicon-link"></span></a>Future Plans</h1>
-
-<ul>
-<li>Prettier UI</li>
-<li>Extract the Inliner code to a separate repository</li>
-<li>Release my Gradle plugin for deploying templates to Mandrill
-
-<ul>
-<li>Publish the plugin to the Gradle plugin repo</li>
-</ul>
-</li>
-<li>Fully support Mandrill handlebars <a href="https://mandrill.zendesk.com/hc/en-us/articles/205582537-Using-Handlebars-for-Dynamic-Content">unique syntax items</a>
-
-<ul>
-<li>There are some funky syntax in Mandrill Handlebars that doesn't even make past the initial handlebars parse. Any <a href="https://github.com/jknack/handlebars.java">Java Handlebars</a> experts willing to lend a hand?</li>
-</ul>
-</li>
-<li>Add support for email platforms other than Mandrill</li>
-<li>Set up on CI service like <strong>Travis CI</strong>
-</li>
-<li>Publish artifacts to Maven Central</li>
-<li>Publish to Mandrill from Preview and Command Line</li>
-<li>Integrate with github for storage of template source</li>
-</ul>
-
-<h1>
-<a id="acknowledgements" class="anchor" href="#acknowledgements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Acknowledgements</h1>
-
-<ul>
-<li><a href="https://github.com/jhy/jsoup">Jsoup HTML Parser</a></li>
-<li><a href="http://cssparser.sourceforge.net/">CSS Parser</a></li>
-<li>
-<a href="https://grizzly.java.net/">Grizzly</a> Http Server / Websockets</li>
-<li>
-<a href="https://jersey.java.net/">Jersey</a> REST API for real time viewer</li>
-<li>
-<a href="https://github.com/FasterXML/jackson">Jackson</a> JSON formatting</li>
-<li><a href="https://github.com/jknack/handlebars.java">Java Handlebars</a></li>
-<li><a href="https://angularjs.org/">Angular</a></li>
-<li><a href="https://material.angularjs.org/latest/">Angular Material</a></li>
-<li><a href="http://momentjs.com/">Moment</a></li>
-<li><a href="https://github.com/urish/angular-moment">Angular Moment</a></li>
-</ul>
-
 <p>Please contact me if you're interested in contributing.</p>
         </section>
 
@@ -264,6 +181,16 @@ and webpack handles the html/javascript side for Interactive mode.</p>
       </div>
     </div>
 
-  
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-72182201-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
   </body>
 </html>
