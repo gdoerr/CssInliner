@@ -54,11 +54,21 @@ templates
 
 # Build Instructions
 
+CssInliner uses [Gradle](http://gradle.org) and [Webpack](https://webpack.github.io/) to build the application. Gradle handles the overall build
+and webpack handles the html/javascript side for Interactive mode.
+
 Dependencies
 * Gradle 2.10 or later
 * Node / Npm
 
 Build Steps
-* gradle npmInstall
-* gradle build - builds a normal jar
-* gradle fatjar - builds a jar with all dependencies
+* `gradle npmInstall` installs npm dependencies
+* `gradle build` builds a normal jar
+* `gradle fatjar` builds a jar with all dependencies
+
+
+# Future Plans
+* Extract the Inliner code to a separate module
+* Release my Gradle plugin for deploying templates to Mandrill
+* Fully support Mandrill handlebars [unique syntax items](https://mandrill.zendesk.com/hc/en-us/articles/205582537-Using-Handlebars-for-Dynamic-Content)
+* Add support for email platforms other than Mandrill
