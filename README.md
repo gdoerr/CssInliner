@@ -79,6 +79,7 @@ Below is a simple fragment that can be imported into a document. It defines thre
 * `imageclass` - which is the class that should be applied to the img element
 * `imageurl` - which is the url that should be applied to the img elements `src` attribute
 * `content` - which is the content that should be included in the table element cell
+
 ```
 <tr class="padding-top">
     <td class="image-container">
@@ -106,7 +107,6 @@ We can now go back to our original email document and include this fragment.
         </link>
     </ui:section>
 ```
-
 ### Mandrill Specific items
 While the code base is set up to support multiple email services, it only includes support for Mandrill at this time. Mandrill specific items:
 * `<meta name="mandrill-template" content="My Email Name" />` specify the name that Mandrill should use for the template
@@ -138,6 +138,8 @@ Build Steps
 * Add support for email platforms other than Mandrill
 * Set up on CI service like **Travis CI**
 * Publish artifacts to Maven Central
+* Publish to Mandrill from Preview and Command Line
+* Integrate with github for storage of template source
 
 # Acknowledgements
 * [Jsoup HTML Parser](https://github.com/jhy/jsoup)
