@@ -35,8 +35,8 @@ import ws.doerr.configuration.ConfigHelp;
 @ConfigFragment
 @ConfigHelp({
     "Interactive Server Configuration\n",
-    "\t-h, --host\t\tHost name to start server on (defaults to localhost)\n",
-    "\t-p, --port\t\tPort to start server on (defaults to 8081)\n"
+    "\t-h, --host\t\t\t\tHost name to start server on (defaults to localhost)\n",
+    "\t-p, --port\t\t\t\tPort to start server on (defaults to 8081)\n"
 })
 public class ServerConfiguration {
     @ConfigElement(shortName = "p", longName = "port", configName = "port", defaultValue = "8081")

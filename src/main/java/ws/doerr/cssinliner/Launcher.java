@@ -34,7 +34,6 @@ import java.util.logging.Logger;
 import ws.doerr.configuration.Configuration;
 import ws.doerr.cssinliner.parser.CssInliner;
 import ws.doerr.cssinliner.server.InlinerApp;
-import ws.doerr.httpserver.Server;
 
 /**
  *
@@ -48,8 +47,10 @@ public class Launcher {
      */
     public static void main(String[] args) {
         try {
+            // Build the configuration
             Configuration.process("cssinliner", args);
             MainConfiguration main = Configuration.get(MainConfiguration.class);
+
             if(main.printHelp) {
                 printHelp();
             } else if(!main.dataPath.isEmpty() && !main.inline) {
@@ -61,27 +62,30 @@ public class Launcher {
                 runService(main);
             } else if(!main.inputPath.isEmpty() || !Configuration.getUnhandled().isEmpty() || main.inline) {
                 runInline(main);
-            }
+            } else
+                printHelp();
         } catch(Exception ex) {
             LOG.log(Level.SEVERE, "Exception launching application", ex);
         }
     }
 
     private static void printHelp() {
-        System.out.println("Email Template Processor"
-            + "The Email Template Processor is designed to simplify the iterative process"
+        System.out.println("CssInliner\n\n"
+            + "CssInliner is designed to simplify the iterative process"
             + " to write, test and maintain email templates.\n");
 
-        System.out.println("The normal version of the program processes html files supplied on the command"
-            + " line or scanned from a directory");
-        System.out.println("\tinliner file[s]    processes each file with the result being writted to the same folder with the .out extension");
-        System.out.println("\tinliner -i input-path    processes each html file from input-path with the result being writted to the same folder with the .out extension");
-        System.out.println("\tinliner -i input-path -o output-path   processes each html file from input-path with the result being writted to output-path\n");
+        System.out.println("The normal version of the program processes html files supplied on the command line or scanned from a directory\n");
+        System.out.println("\tinliner file[s]\t\t\t\tprocesses each file with the result being writted to the same");
+        System.out.println("\t\t\t\t\t\tfolder with the .out extension");
+        System.out.println("\tinliner -i input-path\t\t\tprocesses each html file from input-path with the result being");
+        System.out.println("\t\t\t\t\t\twritten to the same folder with the .out extension");
+        System.out.println("\tinliner -i input-path -o output-path\tprocesses each html file from input-path with the result being");
+        System.out.println("\t\t\t\t\t\twritten to output-path\n");
 
-        System.out.println("The Interactive version of the program processes files in"
-            + " real-time and provides a processed and viewable version of the template");
-        System.out.println("\tthrough a web-browser.");
-        System.out.println("\tinliner -i input-path -d data-path where input path points to the templates and data-path points to the json files used to merge");
+        System.out.println("The Interactive version of the program processes files in real-time and provides a processed and viewable");
+        System.out.println("  version of the template through a web-browser\n");
+        System.out.println("\tinliner -i input-path -d data-path\twhere input path points to the templates and data-path points");
+        System.out.println("\t\t\t\t\t\tto the json files used to merge\n");
         System.out.println("\tOnce running, press Control-D on the console to terminate\n");
 
         Configuration.printHelp(System.out);
@@ -90,7 +94,7 @@ public class Launcher {
     private static void runService(MainConfiguration cfg) {
         try {
             InlinerApp.start(Paths.get(cfg.inputPath), Paths.get(cfg.dataPath));
-            LOG.log(Level.INFO, "Press Control-D to stop server");
+            LOG.log(Level.INFO, "Press Ctrl-D to stop server");
             System.in.read();
             InlinerApp.stop();
         } catch(Exception ex) {

@@ -34,9 +34,9 @@ import ws.doerr.configuration.ConfigHelp;
 @ConfigFragment
 @ConfigHelp( value = {
     "Common Configuration Values\n",
-    "\t-i, --input\t\tSpecify the input directory. Application looks for .html files in this folder\n",
-    "\t-o, --output\t\tSpecify the output directory. Completed files are written to this folder with the same name as the source\n",
-    "\t-d, --data\t\tSpecify the data directory for interactive mode. Grabs files matching [name.html].json from this folder for handlebars merge.\n"
+    "\t-i, --input\t\t\t\tSpecify the input directory. Application looks for .html files\n\t\t\t\t\t\tin this folder\n",
+    "\t-o, --output\t\t\t\tSpecify the output directory. Completed files are written to\n\t\t\t\t\t\tthis folder with the same name as the source\n",
+    "\t-d, --data\t\t\t\tSpecify the data directory for interactive mode. Grabs files\n\t\t\t\t\t\tmatching [name.html].json from this folder for handlebars merge.\n"
 }, priority = 1)
 public class MainConfiguration {
 

@@ -57,12 +57,14 @@ idea {
     }
 }
 
+// Defaults for Node
 node {
     workDir = file('temp')
     nodeModulesDir = file('/src/main/resources')
     download = true;
 }
 
+// Exclude the node/webpack stuff from the build
 sourceSets {
     main {
         resources {
@@ -79,7 +81,7 @@ jar {
     dependsOn 'webpack'
     manifest {
         attributes 'Bundle-Name': 'Email Template Processor',
-            'Bundle-Version': "1.0",
+            'Bundle-Version': '0.1',
             'Bundle-Date': new Date(),
             'Build-By': System.getProperty('user.name'),
             'Build-JDK': System.getProperty('java.version'),
@@ -101,12 +103,25 @@ task webpack(type: Exec) {
     commandLine 'cmd', '/c', 'webpack'
 }
 
+// Copy launch scripts for the fatjar
 task copyLauncher(type: Copy) {
     from 'src/main/resources/buildfiles'
     into 'build/libs'
 }
 
-task fatjar(dependsOn: 'copyLauncher', type: Jar) {
+task fatjar(dependsOn: ['copyLauncher', 'jar'], type: Jar) {
+    manifest {
+        attributes 'Bundle-Name': 'Email Template Processor-All',
+            'Bundle-Version': '0.1',
+            'Bundle-Date': new Date(),
+            'Build-By': System.getProperty('user.name'),
+            'Build-JDK': System.getProperty('java.version'),
+            'Build-Host': java.net.InetAddress.getLocalHost().getHostName(),
+            'Gradle-Version': GradleVersion.current().toString(),
+            'GitBranch': System.env.GIT_BRANCH ?: 'NOT SET',
+            'GitCommit': System.env.GIT_COMMIT ?: 'NOT SET',
+            'Main-Class': 'ws.doerr.cssinliner.Launcher'
+    }
 
     baseName = project.name + '-all'
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
@@ -114,7 +129,9 @@ task fatjar(dependsOn: 'copyLauncher', type: Jar) {
 }
 
 run {
-    args "-i", "G:\\github\\ClearContract\\MandrillTemplates\\src\\main\\java", "-d", "G:\\github\\ClearContract\\MandrillTemplates\\test\\data"
+    //args "-i", "G:\\github\\ClearContract\\MandrillTemplates\\src\\main\\java", "-d", "G:\\github\\ClearContract\\MandrillTemplates\\test\\data"
+    args "-h"
+    
     classpath = sourceSets.main.runtimeClasspath
     main = 'ws.doerr.cssinliner.Launcher'
     standardInput = System.in

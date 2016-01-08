@@ -33,7 +33,7 @@ import ws.doerr.configuration.ConfigHelp;
  */
 @ConfigFragment()
 @ConfigHelp(value = {
-    "\t-ec, -emailclass\tClass name to use to connect to the backend email service\n"
+    "\t-ec, -emailclass\t\t\tClass name to use to connect to the backend email service\n"
 }, priority = 10)
 public class EmailConfiguration {
     @ConfigElement(shortName = "ec", longName = "emailclass", configName = "emailclass", defaultValue = "ws.doerr.cssinliner.email.mandrill.MandrillEmailService")

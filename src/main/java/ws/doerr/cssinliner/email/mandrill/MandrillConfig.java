@@ -36,19 +36,19 @@ import ws.doerr.configuration.ConfigHelp;
     "Mandrill Interface"
 }, priority = 11)
 public class MandrillConfig {
-    @ConfigHelp({"\t-mkey, --mandrillkey\t\tMandrill API Key"})
+    @ConfigHelp({"\t-mkey, --mandrillkey\t\t\tMandrill API Key"})
     @ConfigElement(shortName = "mk", longName = "mandrillkey", configName = "mandrillkey")
     String mandrillKey;
 
-    @ConfigHelp({"\t-msub, --mandrillsub\t\tMandrill Subaccount"})
+    @ConfigHelp({"\t-msub, --mandrillsub\t\t\tMandrill Subaccount"})
     @ConfigElement(shortName = "ms", longName = "mandrillsub", configName = "mandrillsub")
     String mandrillSubacct;
 
-    @ConfigHelp({"\t-mfe, --mandrillfromemail\tMandrill From Email Address"})
+    @ConfigHelp({"\t-mfe, --mandrillfromemail\t\tMandrill From Email Address"})
     @ConfigElement(shortName = "mfe", longName = "mandrillfromemail", configName = "mandrillfromemail", defaultValue = "test@service.clearcontract.com")
     String mandrillFromEmail;
 
-    @ConfigHelp({"\t-mfn, --mandrillfromname\tMandrill From Name\n"})
+    @ConfigHelp({"\t-mfn, --mandrillfromname\t\tMandrill From Name\n"})
     @ConfigElement(shortName = "mfn", longName = "mandrillfromname", configName = "mandrillfromname", defaultValue = "Email Test Service")
     String mandrillFromName;
 }
