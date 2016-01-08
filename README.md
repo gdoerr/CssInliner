@@ -24,7 +24,7 @@ provide a rendered view of the final document that is automatically updated when
 to process various templates into the final html email documents or interactively supporting live preview of the processed documents through a web browser.
 
 # Syntax
-### Templates
+## Templates
 Using a syntax similar to Java Server Faces, you construct a template as a normal HTML document. This document would include your stylesheets along with any markup required to render the basic email layout.
 
 In the template, mark areas where content will be inserted with `<ui:include section="section name" />`. When generating the final document, this tag will be replaced by the content provided by a specific email document.
@@ -50,7 +50,7 @@ The `<head>` section of the final document is created by merging the head sectio
 ```
 Notice from this sample the inclusion of two style sheets. The first one will be read and be included as css classes defined directly in the head of the final document. The second one will be read and have the resulting styles applied inline on the appropriate DOM elements. The stylesheet content will not be present in the final document. The stylesheets require no special formatting. I considered supporting advanced css formats like sass or less but given that all styles need to be inlined I believe the more verbose css style is more appropriate here.
 
-### Email documents
+## Email documents
 Email templates are also normal html document formatted to reference the template and to identify the content that is to be inserted into the template.
 
 ```
@@ -72,7 +72,7 @@ Email templates are also normal html document formatted to reference the templat
 
 This document, when processed, will render a complete HTML document ready for publishing to pretty much any email service that supports templates.
 
-### HTML Fragments
+## HTML Fragments
 Often times when constructing emails, you will use common markup segments either multiple times in the same document and/or across multiple documents. Also, in order to support proper rendering, it's nice to be able encapsulate certain content like buttons that require unique syntax to support clients such as Outlook. This is what **HTML Fragments** are for.
 
 Below is a simple fragment that can be imported into a document. It defines three parameters:
@@ -107,11 +107,11 @@ We can now go back to our original email document and include this fragment.
         </link>
     </ui:section>
 ```
-### Mandrill Specific items
+## Mandrill Specific items
 While the code base is set up to support multiple email services, it only includes support for Mandrill at this time. Mandrill specific items:
 * `<meta name="mandrill-template" content="My Email Name" />` specify the name that Mandrill should use for the template
-* `<meta name="mandrill-labels" content="PROGRAM1 OPTIONA" />` specify the tags Mandrill should associate with the template
-* Extended Handlebars `if` support. This is not complete yet and not compatible with Mandrill's syntax - **work in progress**
+* `<meta name="mandrill-labels" content="LABEL1 LABEL2" />` specify the tags Mandrill should associate with the template
+* **Work in progress**  -  Extended Handlebars `if` support. This is not complete yet and not compatible with Mandrill's syntax
 
 # Build Instructions
 

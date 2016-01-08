@@ -127,4 +127,8 @@ public class SourceInstance {
     public Set<Dependency> getDependencies() {
         return dependencies;
     }
+
+    public Map<String, String> getMeta() {
+        return meta;
+    }
 }

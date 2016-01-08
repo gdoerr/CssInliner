@@ -63,11 +63,7 @@ public class EmailService {
         return instance;
     }
 
-    public String sendTestEmail(List<String> emails, String title, String content) {
-        return provider.sendEmail(emails, title, content);
-    }
-
-    public Map<String, Helper<?>> getHelpers() {
-        return provider.getHelpers();
+    public static EmailServiceProvider get() {
+        return getInstance().provider;
     }
 }

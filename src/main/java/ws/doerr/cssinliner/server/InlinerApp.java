@@ -89,7 +89,7 @@ public class InlinerApp {
         loader.setSuffix("");
         handlebars = new Handlebars(loader);
 
-        EmailService.getInstance().getHelpers().forEach((tag, helper) -> {
+        EmailService.get().getHelpers().forEach((tag, helper) -> {
             handlebars.registerHelper(tag, helper);
         });
 

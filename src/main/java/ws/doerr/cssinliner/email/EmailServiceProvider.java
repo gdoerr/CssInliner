@@ -32,15 +32,51 @@ import java.util.Map;
  *  Abstract Email Service
  */
 public interface EmailServiceProvider {
+    /**
+     * Send an email using an ESP
+     * @param to list of email addresses to send the emails to
+     * @param title title of the email
+     * @param content html formatted email body
+     * @return
+     */
     String sendEmail(List<String> to, String title, String content);
 
+    /**
+     * Get the list of Handlebars Helpers specific to the ESP
+     *
+     * @return
+     */
     default Map<String, Helper<?>> getHelpers() { return Collections.emptyMap(); }
 
+    /**
+     * Check if a template has changed compared to the current document
+     *
+     * @param body
+     * @param meta
+     * @param templateNamePrefix
+     * @return
+     * @throws Exception
+     */
+    boolean isChanged(String body, Map<String, String> meta, String templateNamePrefix) throws Exception;
+
+    /**
+     * Status of a publish activity
+     */
     public enum PublishStatus {
         NO_CHANGE,
         ADDED,
         UPDATED
     }
 
-    PublishStatus publish(String title, String html, Map<String, String> meta, String templateNamePrefix) throws Exception;
+    /**
+     * Publish an email template
+     * @param title email title
+     * @param body html formatted email body
+     * @param meta ESP specific metadata tags
+     * @param templateNamePrefix template name prefix
+     *
+     * @return
+     * @throws Exception
+     */
+    PublishStatus publish(String title, String body, Map<String, String> meta, String templateNamePrefix) throws Exception;
 }

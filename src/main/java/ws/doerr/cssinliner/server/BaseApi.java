@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.PathParam;
@@ -39,15 +40,21 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import ws.doerr.cssinliner.email.EmailServiceProvider.PublishStatus;
 
 /**
+ * REST API
  *
- * @author greg
+ * Web page interface for Interactive Mode
  */
 @javax.ws.rs.Path("/")
 public class BaseApi {
     private static final Logger LOG = Logger.getLogger(BaseApi.class.getName());
 
+    /**
+     * Get all of the files found
+     * @return
+     */
     @javax.ws.rs.Path("files")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -55,6 +62,11 @@ public class BaseApi {
         return Response.ok(InlinerApp.getInstance().getSources()).build();
     }
 
+    /**
+     * Get the merged content for a specific file ID
+     * @param id
+     * @return
+     */
     @javax.ws.rs.Path("files/{id}")
     @GET
     public Response getFile(@PathParam("id") UUID id) {
@@ -72,6 +84,12 @@ public class BaseApi {
         return Response.status(Response.Status.NOT_FOUND).build();
     }
 
+    /**
+     * Send a test email using the merged version of a File
+     * @param id file to send
+     * @param emails email address(es) to send the email to
+     * @return
+     */
     @javax.ws.rs.Path("files/{id}/sendtest")
     @PUT
     @Produces(MediaType.TEXT_PLAIN)
@@ -81,14 +99,66 @@ public class BaseApi {
         if(instance != null && emails != null && !emails.isEmpty()) {
             try {
                 byte[] html = Files.readAllBytes(instance.getMerged());
-                String rc = EmailService.getInstance()
-                        .sendTestEmail(emails, instance.getTitle(), new String(html, Charsets.UTF_8));
+                String rc = EmailService.get()
+                        .sendEmail(emails, instance.getTitle(), new String(html, Charsets.UTF_8));
                 return Response.ok(rc).build();
             } catch(Exception ex) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex).build();
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity(ex.getMessage())
+                        .build();
             }
         }
 
         return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    /**
+     * Check if an Inlined file is the same as currently published to the ESP
+     * @param id File ID to use
+     * @param prefix prefix for the template name (defaults to DEV)
+     * @return
+     */
+    @javax.ws.rs.Path("files/{id}/changed")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getESPState(@PathParam("id") UUID id,
+            @DefaultValue("DEV") @QueryParam("prefix") String prefix) {
+
+        SourceInstance instance = InlinerApp.getInstance().getSource(id);
+        if(instance == null)
+            return Response.status(Response.Status.NOT_FOUND).build();
+
+        try {
+            String body = new String(Files.readAllBytes(instance.getInlined()), Charsets.UTF_8);
+            boolean rc = EmailService.get().isChanged(body, instance.getMeta(), prefix);
+            return Response.ok(rc).build();
+        } catch(Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(ex.getMessage())
+                    .type(MediaType.TEXT_PLAIN_TYPE)
+                    .build();
+        }
+    }
+
+    @javax.ws.rs.Path("files/{id}/changed")
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response publishTemplate(@PathParam("id") UUID id,
+            @DefaultValue("DEV") @QueryParam("prefix") String prefix) {
+
+        SourceInstance instance = InlinerApp.getInstance().getSource(id);
+        if(instance == null)
+            return Response.status(Response.Status.NOT_FOUND).build();
+
+        try {
+            String body = new String(Files.readAllBytes(instance.getInlined()), Charsets.UTF_8);
+            PublishStatus rc = EmailService.get().publish(instance.getTitle(), body, instance.getMeta(), prefix);
+            return Response.ok(rc).build();
+        } catch(Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(ex.getMessage())
+                    .type(MediaType.TEXT_PLAIN_TYPE)
+                    .build();
+        }
     }
 }

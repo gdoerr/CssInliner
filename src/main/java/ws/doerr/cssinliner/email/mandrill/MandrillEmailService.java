@@ -127,14 +127,38 @@ public class MandrillEmailService implements EmailServiceProvider {
         return HELPERS;
     }
 
-    @Override
-    public PublishStatus publish(String title, String html, Map<String, String> meta, String templateNamePrefix) throws Exception {
+    public boolean isChanged(String body, Map<String, String> meta, String templateNamePrefix) throws Exception {
         try {
             String templateName = templateNamePrefix + meta.get(META_TEMPLATE_NAME);
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
 
             // Get the hash from the current document
-            String hash = DatatypeConverter.printHexBinary(digest.digest(html.getBytes("UTF-8")));
+            String hash = DatatypeConverter.printHexBinary(digest.digest(body.getBytes("UTF-8")));
+            String template = getTemplate(templateName);
+
+            if(template == null) {
+                return true;
+            } else {
+                String templateHash = DatatypeConverter.printHexBinary(digest.digest(template.getBytes("UTF-8")));
+                return templateHash.equals(hash);
+            }
+        } catch(IOException ex) {
+            LOG.log(Level.SEVERE, "Exception communicating with Mandrill", ex);
+            throw ex;
+        } catch(NoSuchAlgorithmException ex) {
+            LOG.log(Level.SEVERE, "Exception getting SHA-256 digest instance", ex);
+            throw ex;
+        }
+    }
+
+    @Override
+    public PublishStatus publish(String title, String body, Map<String, String> meta, String templateNamePrefix) throws Exception {
+        try {
+            String templateName = templateNamePrefix + meta.get(META_TEMPLATE_NAME);
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+
+            // Get the hash from the current document
+            String hash = DatatypeConverter.printHexBinary(digest.digest(body.getBytes("UTF-8")));
             String template = getTemplate(templateName);
 
             String[] labels = new String[]{};
@@ -142,14 +166,14 @@ public class MandrillEmailService implements EmailServiceProvider {
                 labels = meta.get(META_LABELS).split(",");
 
             if(template == null) {
-                addTemplate(templateName, title, html, labels);
+                addTemplate(templateName, title, body, labels);
                 return PublishStatus.ADDED;
             } else {
                 String templateHash = DatatypeConverter.printHexBinary(digest.digest(template.getBytes("UTF-8")));
                 if(templateHash.equals(hash))
                     return PublishStatus.NO_CHANGE;
 
-                updateTemplate(templateName, title, html, labels);
+                updateTemplate(templateName, title, body, labels);
                 return PublishStatus.UPDATED;
             }
 
