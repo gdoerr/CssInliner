@@ -1,2 +1,2 @@
 #! /bin/bash
-java -jar CssInliner.jar "$@"
+java -jar CssInliner-all.jar "$@"
