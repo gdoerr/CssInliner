@@ -46,6 +46,8 @@ dependencies {
     compile "org.reflections:reflections:0.9.10"
     compile "org.javassist:javassist:3.20.0-GA"
 
+    compile "org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5"
+
     compile "org.slf4j:slf4j-nop:1.7.13"
 }
 
@@ -131,7 +133,7 @@ task fatjar(dependsOn: ['copyLauncher', 'jar'], type: Jar) {
 run {
     //args "-i", "G:\\github\\ClearContract\\MandrillTemplates\\src\\main\\java", "-d", "G:\\github\\ClearContract\\MandrillTemplates\\test\\data"
     args "-h"
-    
+
     classpath = sourceSets.main.runtimeClasspath
     main = 'ws.doerr.cssinliner.Launcher'
     standardInput = System.in

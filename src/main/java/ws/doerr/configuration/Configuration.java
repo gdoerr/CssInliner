@@ -24,6 +24,7 @@
 package ws.doerr.configuration;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import java.io.File;
@@ -57,7 +58,7 @@ public class Configuration {
     private final Map<String, Object> configFragments = new HashMap<>();
     private final Multimap<String, ConfigItem> items = HashMultimap.create();
 
-    private final Multimap<Integer, ConfigHelp> helps = HashMultimap.create();
+    private final Multimap<Integer, ConfigHelp> helps = ArrayListMultimap.create();
 
     private final List<String> unhandledArguments = new ArrayList<>();
 
