@@ -1,0 +1,37 @@
+<div class="doc-list" layout="column" ng-repeat="(id, file) in tmpl.files" ng-class="{'selected': tmpl.selected.id === id}">
+    <div ng-click="tmpl.doSelect(id)">
+        <div layout>
+            <div>{{file.source.name}}</div>
+            <div flex></div>
+            <md-icon md-font-set="material-icons" class="md-primary" ng-show="tmpl.hasErrors(id)">error_outline</md-icon>
+            <md-icon md-font-set="material-icons" class="md-primary" ng-show="tmpl.isUpdated(id)">fiber_new</md-icon>
+            <div am-time-ago="file.modified"></div>
+        </div>
+    </div>
+    <div class="hide-no-select">
+        <div layout>
+            <div flex></div>
+            <div>{{file.size | number:0}} bytes</div>
+        </div>
+        <div layout ng-repeat="(key, value) in file.meta" class="list-item">
+            <div flex="20" class="label">{{key}}</div>
+            <div class="content">{{value}}</div>
+        </div>
+        <div layout ng-repeat="dep in file.dependencies | orderBy: 'type'" class="list-item">
+            <div flex="20" class="label">{{dep.type}}</div>
+            <div class="content">{{dep.path.name}}</div>
+            <div flex></div>
+            <div am-time-ago="dep.path.modified"></div>
+        </div>
+        <div layout class="list-item">
+            <div flex="20" class="label">Data</div>
+            <div class="content">{{file.data.name}}</div>
+            <div flex></div>
+            <div am-time-ago="file.data.modified"></div>
+        </div>
+        <div layout ng-repeat="(error, message) in file.errors" class="list-item">
+            <div flex="20" class="label">{{error}}</div>
+            <div class="content">{{message}}</div>
+        </div>
+    </div>
+</div>

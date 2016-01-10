@@ -1,24 +1,23 @@
 var webpack = require('webpack');
 
 module.exports = {
-    entry: './app.js',
+    entry: './src/app.js',
     output: {
         filename: 'web/bundle.js'
     },
     module: {
         loaders: [
             { test: /\.css$/, loader: 'style!css' },
+            { test: /\.less$/, loader: 'style!css!less' },
             { include: /\.json$/, loader: 'json-loader'},
-            {
-                test: /jquery.+\.js$/,
-                loader: 'expose?jQuery'
-            }
+            { test: /\.html$/, loader: 'ng-cache' }
         ]
     },
     plugins: [
         new webpack.ProvidePlugin({
             $: 'jquery',
-            jQuery: 'jquery'
+            jQuery: 'jquery',
+            'window.jQuery': 'jquery'
         })
     ]
 };

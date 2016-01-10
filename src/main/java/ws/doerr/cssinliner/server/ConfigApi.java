@@ -21,53 +21,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package ws.doerr.cssinliner.parser;
+package ws.doerr.cssinliner.server;
 
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import ws.doerr.cssinliner.email.EmailService;
+import ws.doerr.httpserver.Server;
 
 /**
  *
  * @author greg
  */
-public class InlinerContext {
-    private final Map<Path, Dependency> dependencies = new HashMap<>();
-    private final Map<String, String> meta = new HashMap<>();
-    private String html;
-    private String title;
+@Path("/config")
+public class ConfigApi {
+    @Path("/email/providers")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getProviders() {
+        ObjectNode rc = Server.getMapper().createObjectNode();
 
-    public Set<Dependency> getDependencies() {
-        return new HashSet<>(dependencies.values());
+        rc.put("current", EmailService.getProvider());
+        ArrayNode available = rc.putArray("available");
+        EmailService.getAvailable().forEach((clazz, name) -> {
+            available.addObject()
+                    .put("key", clazz)
+                    .put("value", name);
+        });
+        return Response.ok(rc).build();
     }
 
-    public Map<String, String> getMeta() {
-        return meta;
-    }
-
-    protected void addDependency(Path path, Dependency.DependencyType type) {
-        dependencies.put(path, new Dependency(path, type));
-    }
-
-    protected void addMeta(String label, String value) {
-        meta.put(label, value);
-    }
-
-    protected void setHtml(String html) {
-        this.html = html;
-    }
-
-    public String getHtml() {
-        return html;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    protected void setTitle(String title) {
-        this.title = title;
-    }
 }

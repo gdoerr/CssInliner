@@ -65,6 +65,8 @@ public class Configuration {
 
     private String configName;
 
+    private final Reflections reflections = new Reflections();
+
     private Configuration() {}
 
     /**
@@ -222,8 +224,6 @@ public class Configuration {
      * @throws ConfigurationException
      */
     private void scanConfiguration() throws ConfigurationException {
-        Reflections reflections = new Reflections();
-
         for(Class<?> clazz : reflections.getTypesAnnotatedWith(ConfigFragment.class)) {
             try {
                 Object targetObject = clazz.newInstance();
@@ -440,5 +440,9 @@ public class Configuration {
     public static boolean isDebug() {
         String args = java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments().toString();
         return args.contains("debug") || args.contains("jdwp");
+    }
+
+    public static Reflections getReflections() {
+        return INSTANCE.reflections;
     }
 }

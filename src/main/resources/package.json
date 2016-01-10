@@ -6,6 +6,7 @@
     "author": "greg@doerr.ws",
     "license": "MIT",
     "devDependencies": {
+        "webpack": "latest",
         "bundle-loader": "^0.5.0",
         "css-loader": "^0.9.0",
         "file-loader": "^0.7.2",
@@ -16,7 +17,7 @@
         "json-loader": "~0.5.4",
         "expose-loader": "latest",
         "imports-loader": "latest",
-        "webpack": "latest"
+        "ng-cache-loader": "latest"
     },
     "dependencies": {
         "jquery": "latest",
@@ -26,6 +27,7 @@
         "angular-animate": "^1.4.7",
         "angular-aria": "^1.4.7",
         "angular-material": "^1.0.0",
+        "angular-local-storage": "latest",
         "moment": "latest",
         "angular-moment": "1.0.0-beta.2",
         "moment-timezone": "latest"

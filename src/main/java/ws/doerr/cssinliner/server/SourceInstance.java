@@ -93,7 +93,7 @@ public class SourceInstance {
         meta.putAll(context.getMeta());
 
         this.size = source.toFile().length();
-        this.modified = inlined.toFile().lastModified();
+        this.modified = source.toFile().lastModified();
     }
 
     public void logError(String error, String message) {

@@ -42,6 +42,7 @@ public class PathSerializer extends JsonSerializer<Path> {
         gen.writeStringField("name", value.getFileName().toString());
         gen.writeStringField("folder", value.getParent().toString());
         gen.writeStringField("path", value.toString());
+        gen.writeNumberField("modified", value.toFile().lastModified());
         gen.writeEndObject();
     }
 

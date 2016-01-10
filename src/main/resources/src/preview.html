@@ -1,0 +1,33 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span>{{preview.selected.title}}</span>
+        </h2>
+        <span flex></span>
+        <md-menu md-position-mode="target-right target" md-offset="0 50">
+            <md-button ng-click="$mdOpenMenu($event)" ng-disabled="!preview.selected">
+                Email Actions
+                <md-icon md-font-set="material-icons">email</md-icon>
+            </md-button>
+            <md-menu-content>
+                <md-menu-item>
+                    <md-button ng-click="preview.sendTestEmail()">
+                        <md-icon md-font-set="material-icons">send</md-icon>
+                        Send Test
+                    </md-button>
+                </md-menu-item>
+                <md-menu-item>
+                    <md-button ng-click="preview.sendTestEmail()">
+                        <md-icon md-font-set="material-icons">merge_type</md-icon>
+                        Send Test (ESP merge)
+                    </md-button>
+                </md-menu-item>
+            </md-menu-content>
+        </md-menu>
+    </div>
+</md-toolbar>
+<div layout="column" class="preview-wrapper">
+    <div class="preview-content">
+        <bld-iframe src="{{preview.selected.viewPath}}"></clr-iframe>
+    </div>
+</div>

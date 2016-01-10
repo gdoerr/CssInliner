@@ -48,8 +48,8 @@ import ws.doerr.cssinliner.email.EmailServiceProvider.PublishStatus;
  * Web page interface for Interactive Mode
  */
 @javax.ws.rs.Path("/")
-public class BaseApi {
-    private static final Logger LOG = Logger.getLogger(BaseApi.class.getName());
+public class TemplateApi {
+    private static final Logger LOG = Logger.getLogger(TemplateApi.class.getName());
 
     /**
      * Get all of the files found
@@ -98,9 +98,10 @@ public class BaseApi {
         SourceInstance instance = InlinerApp.getInstance().getSource(id);
         if(instance != null && emails != null && !emails.isEmpty()) {
             try {
-                byte[] html = Files.readAllBytes(instance.getMerged());
-                String rc = EmailService.get()
-                        .sendEmail(emails, instance.getTitle(), new String(html, Charsets.UTF_8));
+                String body = new String(Files.readAllBytes(instance.getMerged()), Charsets.UTF_8);
+
+                String rc = EmailService.get().sendEmail(emails, instance.getTitle(), body);
+
                 return Response.ok(rc).build();
             } catch(Exception ex) {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

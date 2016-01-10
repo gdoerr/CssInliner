@@ -1,0 +1,36 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <a href="http://gdoerr.github.io/CssInliner" target="_blank">
+            <md-icon md-svg-src="assets/door.svg" class="s48"></md-icon>
+            <md-tooltip>By Greg Doerr</md-tooltip>
+        </a>
+        <span flex></span>
+        <span>Templates</span>
+        <span flex></span>
+        <md-menu md-offset="0 50">
+            <md-button class="md-icon-button" ng-click="$mdOpenMenu($event)">
+                <md-icon md-font-set="material-icons">menu</md-icon>
+            </md-button>
+            <md-menu-content>
+                <md-menu-item>
+                    <md-button ng-click="toolbar.configure()">
+                        <md-icon md-font-set="material-icons">publish</md-icon>
+                        Publish
+                    </md-button>
+                </md-menu-item>
+                <md-menu-item>
+                    <md-button ng-click="toolbar.configure()">
+                        <md-icon md-font-set="material-icons">update</md-icon>
+                        Commit
+                    </md-button>
+                </md-menu-item>
+                <md-menu-item>
+                    <md-button ng-click="toolbar.configure()">
+                        <md-icon md-font-set="material-icons">settings</md-icon>
+                        Configuration
+                    </md-button>
+                </md-menu-item>
+            </md-menu-content>
+        </md-menu>
+    </div>
+</md-toolbar>
