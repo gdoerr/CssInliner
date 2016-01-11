@@ -19,3 +19,4 @@ src/main/resources/web/bundle.js
 CssInliner.iml
 CssInliner.ipr
 CssInliner.iws
+!/gradle/*
