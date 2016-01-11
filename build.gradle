@@ -165,10 +165,15 @@ class RunWebpackDebug extends JavaExec {
         def process
         def myOutput = System.out
 
+        // Run webpack in a separate thread so we can manage the output and still
+        // have the Gradle task run normally
         Thread t = new Thread(new Runnable() {
 
             public void run() {
                 try {
+                    // For some reason, if we invoke webpack through the normal process, we can't
+                    // kill the process when we're done with it. This way, we can kill webpack
+                    // once the user exits the server
                     process = new ProcessBuilder(
                                 'node',
                                 '-i',
@@ -180,6 +185,7 @@ class RunWebpackDebug extends JavaExec {
 
                     myOutput.println 'webpack: watch started'
 
+                    // Buffer the process output to the current console
                     InputStream stdout = process.getInputStream ()
                     BufferedReader reader = new BufferedReader (new InputStreamReader(process.in))
 
@@ -195,8 +201,10 @@ class RunWebpackDebug extends JavaExec {
         t.setDaemon(true);
         t.start();
 
+        // Run the Gradle task
         super.exec();
 
+        // Stop webpack...
         t.stop();
         process.destroy()
     }
