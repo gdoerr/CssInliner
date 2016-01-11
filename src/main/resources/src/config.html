@@ -1,0 +1,52 @@
+<md-dialog ng-controller="ConfigCtrl as config" aria-label="Configuration">
+    <form name="configForm">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Configuration</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="config.cancel()">
+                    <md-icon md-font-set="material-icons">close</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content style="width:800px;height:810px;">
+            <div layout="column" class="md-dialog-content">
+                <md-input-container>
+                    <label>Email Service Provider</label>
+                    <md-select ng-model="config.provider">
+                        <md-option ng-value="provider.key" ng-repeat="provider in config.providers">
+                            {{provider.value}}
+                        </md-option>
+                    </md-select>
+                </md-input-container>
+                <div>
+                    <md-chips ng-model="config.emails"
+                              md-on-add="config.chipChange()"
+                              md-on-remove="config.chipChange()"
+                              placeholder="Send To Emails"
+                              secondary-placeholder="Emails"></md-chips>
+                </div>
+                <md-input-container>
+                    <label>Template Name Prefix</label>
+                    <input ng-model="config.prefix">
+                </md-input-container>
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions layout>
+            <div>
+                <md-button class="md-raised" ng-click="config.cancel()">
+                    <md-icon md-font-set="material-icons">close</md-icon>
+                    Cancel
+                </md-button>
+            </div>
+            <div flex="grow"></div>
+            <div>
+                <md-button class="md-raised md-primary" ng-click="config.save()"
+                           ng-disabled="configForm.$invalid || configForm.$pristine">
+                    Save
+                    <md-icon md-font-set="material-icons">save</md-icon>
+                </md-button>
+            </div>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

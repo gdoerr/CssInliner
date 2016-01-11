@@ -1,4 +1,8 @@
-// Markdown Javadoc
+
+import org.gradle.api.tasks.JavaExec
+import org.gradle.api.tasks.TaskAction
+
+// Markdown Javadoc and other build config
 buildscript {
     repositories {
         mavenCentral()
@@ -11,7 +15,6 @@ buildscript {
         classpath 'com.moowork.gradle:gradle-node-plugin:0.11'
     }
 }
-
 
 apply plugin: 'ch.raffael.pegdown-doclet'
 apply plugin: 'java'
@@ -57,13 +60,6 @@ idea {
     }
 }
 
-// Defaults for Node
-node {
-    workDir = file('temp')
-    nodeModulesDir = file('/src/main/resources')
-    download = true;
-}
-
 // Exclude the node/webpack stuff from the build
 sourceSets {
     main {
@@ -80,7 +76,7 @@ sourceSets {
 jar {
     dependsOn 'webpack'
     manifest {
-        attributes 'Bundle-Name': 'Email Template Processor',
+        attributes 'Bundle-Name': 'CssInliner',
             'Bundle-Version': '0.1',
             'Bundle-Date': new Date(),
             'Build-By': System.getProperty('user.name'),
@@ -97,6 +93,13 @@ startScripts {
     mainClassName 'ws.doerr.cssinliner.Launcher'
 }
 
+// Defaults for Node
+node {
+    workDir = file('temp')
+    nodeModulesDir = file('/src/main/resources')
+    download = true;
+}
+
 task webpack(type: Exec) {
     workingDir 'src/main/resources'
     args = ['webpack']
@@ -111,7 +114,7 @@ task copyLauncher(type: Copy) {
 
 task fatjar(dependsOn: ['copyLauncher', 'jar'], type: Jar) {
     manifest {
-        attributes 'Bundle-Name': 'Email Template Processor-All',
+        attributes 'Bundle-Name': 'CssInliner-All',
             'Bundle-Version': '0.1',
             'Bundle-Date': new Date(),
             'Build-By': System.getProperty('user.name'),
@@ -129,20 +132,81 @@ task fatjar(dependsOn: ['copyLauncher', 'jar'], type: Jar) {
 }
 
 run {
-    //args "-i", "G:\\github\\ClearContract\\MandrillTemplates\\src\\main\\java", "-d", "G:\\github\\ClearContract\\MandrillTemplates\\test\\data"
-    args "-h"
-    
+    args '-h'
+
     classpath = sourceSets.main.runtimeClasspath
     main = 'ws.doerr.cssinliner.Launcher'
     standardInput = System.in
 }
 
-task(debug, dependsOn: ['classes', 'webpack'], type: JavaExec) {
-    args "-i", "G:\\github\\ClearContract\\MandrillTemplates\\src\\main\\java", "-d", "G:\\github\\ClearContract\\MandrillTemplates\\test\\data"
-    //args "-cl", "G:\\github\\ClearContract\\MandrillTemplates\\src\\main\\java\\collab-new.html"
+task(debug, dependsOn: ['classes'], type: RunWebpackDebug) {
+    args '-i', 'G:\\github\\ClearContract\\MandrillTemplates\\src\\main\\java', '-d', 'G:\\github\\ClearContract\\MandrillTemplates\\test\\data'
 
     classpath = sourceSets.main.runtimeClasspath
     main = 'ws.doerr.cssinliner.Launcher'
     debug true
     standardInput = System.in
+
+    projectPath = projectDir
 }
+
+/**
+ * Special JavaExec extension to run webpack in watch mode while the server is running
+ *
+ * REQUIRES the node_modules folder be installed in the resources folder which is
+ * the default
+ */
+class RunWebpackDebug extends JavaExec {
+    public def projectPath
+
+    @TaskAction
+    @Override
+    public void exec() {
+        def process
+        def myOutput = System.out
+
+        // Run webpack in a separate thread so we can manage the output and still
+        // have the Gradle task run normally
+        Thread t = new Thread(new Runnable() {
+
+            public void run() {
+                try {
+                    // For some reason, if we invoke webpack through the normal process, we can't
+                    // kill the process when we're done with it. This way, we can kill webpack
+                    // once the user exits the server
+                    process = new ProcessBuilder(
+                                'node',
+                                '-i',
+                                'node_modules/webpack/bin/webpack.js',
+                                '--watch', '-color')
+                            .directory(new File("${projectPath}/src/main/resources"))
+                            .redirectErrorStream(true)
+                            .start()
+
+                    myOutput.println 'webpack: watch started'
+
+                    // Buffer the process output to the current console
+                    InputStream stdout = process.getInputStream ()
+                    BufferedReader reader = new BufferedReader (new InputStreamReader(process.in))
+
+                    def line;
+                    while ((line = reader.readLine ()) != null) {
+                       System.out.println ("webpack: " + line)
+                    }
+                } catch (IOException ex) {
+                    myOutput.println ex
+                }
+            }
+        });
+        t.setDaemon(true);
+        t.start();
+
+        // Run the Gradle task
+        super.exec();
+
+        // Stop webpack...
+        t.stop();
+        process.destroy()
+    }
+}
+

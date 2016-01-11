@@ -23,8 +23,7 @@
  */
 package ws.doerr.cssinliner.email;
 
-import com.github.jknack.handlebars.Helper;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,23 +37,25 @@ public class EmailService {
     private static final Logger LOG = Logger.getLogger(EmailService.class.getName());
 
     private static EmailService instance;
-    private static final Boolean lock = false;
+    private static final Boolean LOCK = false;
 
     private EmailServiceProvider provider;
+    private final Map<String, String> providers = new HashMap<>();
+    private String providerName;
 
     private EmailService() {
-        try {
-            EmailConfiguration config = Configuration.get(EmailConfiguration.class);
-            Class<?> providerClass = Class.forName(config.emailClassName);
-            provider = (EmailServiceProvider) providerClass.newInstance();
-        } catch(Exception ex) {
-            LOG.log(Level.SEVERE, "Exception instantiating Email Service Provider", ex);
-        }
+        Configuration.getReflections().getSubTypesOf(EmailServiceProvider.class).forEach(clazz -> {
+            providers.put(clazz.getName(), clazz.getSimpleName());
+        });
+
+        EmailConfiguration config = Configuration.get(EmailConfiguration.class);
+        providerName = config.emailClassName;
+        setProvider();
     }
 
     public static EmailService getInstance() {
         if(instance == null) {
-            synchronized(lock) {
+            synchronized(LOCK) {
                 if(instance == null)
                     instance = new EmailService();
             }
@@ -65,5 +66,27 @@ public class EmailService {
 
     public static EmailServiceProvider get() {
         return getInstance().provider;
+    }
+
+    public static Map<String, String> getAvailable() {
+        return getInstance().providers;
+    }
+
+    public static void setProvider(String className) {
+        getInstance().providerName = className;
+        getInstance().setProvider();
+    }
+
+    public static String getProvider() {
+        return getInstance().providerName;
+    }
+
+    private void setProvider() {
+        try {
+            Class<?> providerClass = Class.forName(providerName);
+            provider = (EmailServiceProvider) providerClass.newInstance();
+        } catch(ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+            LOG.log(Level.SEVERE, "Exception instantiating Email Service Provider", ex);
+        }
     }
 }

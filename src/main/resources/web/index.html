@@ -16,76 +16,17 @@
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     </head>
     <body ng-app="email-template" ng-cloak>
-        <div role="main" class="full-height" ng-controller="inlineCtrl">
+        <div role="main" class="full-height">
             <md-content class="full-height">
                 <div layout class="full-height">
-                    <div flex="33">
-                        <md-toolbar>
-                            <div class="md-toolbar-tools">
-                                <a href="https://github.com/gdoerr/CssInliner" target="_blank">
-                                    <md-icon md-svg-src="assets/door.svg" class="s48"></md-icon>
-                                    <md-tooltip>By Greg Doerr</md-tooltip>
-                                </a>
-                                <span flex></span>
-                            </div>
-                        </md-toolbar>
+                    <div flex="33" class="control-panel">
+                        <bld-toolbar></bld-toolbar>
                         <div layout-margin>
-                            <div class="doc-list" layout="column" ng-repeat="(id, file) in files" ng-class="{'selected': selected.id === id}">
-                                <div ng-click="doSelect(id)">
-                                    <div layout>
-                                        <div>{{file.source.name}}</div>
-                                        <div flex></div>
-                                        <md-icon md-font-set="material-icons" class="md-primary" ng-show="hasErrors(id)">error_outline</md-icon>
-                                        <md-icon md-font-set="material-icons" class="md-primary" ng-show="isUpdated(id)">fiber_new</md-icon>
-                                        <div am-time-ago="file.modified"></div>
-                                    </div>
-                                </div>
-                                <div class="hide-no-select">
-                                    <div layout>
-                                        <div flex></div>
-                                        <div>{{file.size | number:0}} bytes</div>
-                                    </div>
-                                    <div layout ng-repeat="(key, value) in file.meta" class="list-item">
-                                        <div flex="20" class="label">{{key}}</div>
-                                        <div class="content">{{value}}</div>
-                                    </div>
-                                    <div layout ng-repeat="dep in file.dependencies | orderBy: 'type'" class="list-item">
-                                        <div flex="20" class="label">{{dep.type}}</div>
-                                        <div class="content">{{dep.path.name}}</div>
-                                    </div>
-                                    <div layout class="list-item">
-                                        <div flex="20" class="label">Data</div>
-                                        <div class="content">{{file.data.name}}</div>
-                                    </div>
-                                    <div layout ng-repeat="(error, message) in file.errors" class="list-item">
-                                        <div flex="20" class="label">{{error}}</div>
-                                        <div class="content">{{message}}</div>
-                                    </div>
-                                </div>
-                            </div>
+                            <bld-templates></bld-templates>
                         </div>
                     </div>
                     <div flex="66" class="full-height">
-                        <md-toolbar>
-                            <div class="md-toolbar-tools">
-                                <h2>
-                                    <span>{{selected.title}}</span>
-                                </h2>
-                                <span flex></span>
-                                <md-button class="md-raised" ng-click="sendTestEmail()">
-                                    Send Test
-                                </md-button>
-                            </div>
-                        </md-toolbar>
-                        <div layout="column" class="preview-wrapper">
-                            <div class="preview-content">
-                                <clr-iframe src="{{selected.viewPath}}"></clr-iframe>
-                            </div>
-                            <!-- <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a>
-                                from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a>
-                                is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0">CC BY 3.0</a>
-                            </div> -->
-                        </div>
+                        <bld-preview></bld-preview>
                     </div>
                 </div>
             </md-content>
