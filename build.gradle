@@ -96,7 +96,7 @@ startScripts {
 // Defaults for Node
 node {
     workDir = file('temp')
-    nodeModulesDir = file('/src/main/resources')
+    nodeModulesDir = file('src/main/resources')
     download = true;
 }
 
