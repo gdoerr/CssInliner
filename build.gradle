@@ -100,10 +100,10 @@ node {
     download = true;
 }
 
-task webpack(type: Exec) {
+task webpack(type: NodeTask) {
     workingDir 'src/main/resources'
-    args = ['webpack']
-    commandLine 'cmd', '/c', 'webpack'
+
+    script = file('src/main/resources/node_modules/.bin/webpack')
 }
 
 // Copy launch scripts for the fatjar
@@ -209,4 +209,3 @@ class RunWebpackDebug extends JavaExec {
         process.destroy()
     }
 }
-
