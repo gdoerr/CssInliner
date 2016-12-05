@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Greg Doerr
+ * Copyright (c) 2015-2016 Greg Doerr
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,8 +32,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ws.doerr.configuration.Configuration;
-import ws.doerr.cssinliner.parser.CssInliner;
 import ws.doerr.cssinliner.server.InlinerApp;
+import ws.doerr.projects.emailtemplates.CssInliner;
 
 /**
  *

@@ -31,5 +31,9 @@
         "moment": "latest",
         "angular-moment": "1.0.0-beta.2",
         "moment-timezone": "latest"
+    },
+    "scripts": {
+        "webpack": "webpack",
+        "webpack-debug": "webpack --watch --color"
     }
 }

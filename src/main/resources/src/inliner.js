@@ -30,7 +30,7 @@
         function(angular, storage, moment) {
 
             var module = angular.module("inliner", [
-                "LocalStorageModule"
+                storage
             ]);
 
             module.config(function(localStorageServiceProvider) {

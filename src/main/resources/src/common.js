@@ -81,7 +81,7 @@
                             if(isIE || isEdge) {
                                 $timeout(frameLoaded, 1000);
                             } else {
-                                iFrame.load(frameLoaded);
+                                iFrame.on('load', frameLoaded);
                             }
 
                             $compile($($element).contents())($scope);

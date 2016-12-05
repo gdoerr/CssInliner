@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Greg Doerr
+ * Copyright (c) 2015-2016 Greg Doerr
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,6 @@
  */
 package ws.doerr.cssinliner.server;
 
-import ws.doerr.cssinliner.parser.InlinerContext;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,7 +32,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import ws.doerr.cssinliner.parser.Dependency;
+import ws.doerr.projects.emailtemplates.Dependency;
+import ws.doerr.projects.emailtemplates.InlinerContext;
 
 /**
  *

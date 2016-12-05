@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Greg Doerr
+ * Copyright (c) 2015-2016 Greg Doerr
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,6 @@
 package ws.doerr.cssinliner.server;
 
 import ws.doerr.httpserver.Server;
-import ws.doerr.cssinliner.parser.CssInliner;
-import ws.doerr.cssinliner.parser.InlinerContext;
 import ws.doerr.monitor.Monitor;
 import ws.doerr.monitor.MonitorHandler;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -33,8 +31,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.github.jknack.handlebars.Context;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.HandlebarsException;
+import com.github.jknack.handlebars.Helper;
 import com.github.jknack.handlebars.JsonNodeValueResolver;
+import com.github.jknack.handlebars.Options;
 import com.github.jknack.handlebars.Template;
+import com.github.jknack.handlebars.helper.StringHelpers;
 import com.github.jknack.handlebars.io.FileTemplateLoader;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -46,15 +47,22 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ws.doerr.cssinliner.email.EmailService;
+import ws.doerr.projects.emailtemplates.CssInliner;
+import ws.doerr.projects.emailtemplates.InlinerContext;
 
 /**
  *
@@ -88,6 +96,9 @@ public class InlinerApp {
         FileTemplateLoader loader = new FileTemplateLoader(workingFolder.getFile());
         loader.setSuffix("");
         handlebars = new Handlebars(loader);
+
+        StringHelpers.register(handlebars);
+        handlebars.registerHelper("dateFormat", new DateHelper());
 
         EmailService.get().getHelpers().forEach((tag, helper) -> {
             handlebars.registerHelper(tag, helper);
@@ -265,5 +276,39 @@ public class InlinerApp {
     public static void stop() {
         Server.stop();
         Monitor.stop();
+    }
+
+    private static class DateHelper implements Helper<Object> {
+        private Map<String, Integer> styles;
+
+        private DateHelper() {
+            styles = new HashMap<String, Integer>() {
+                {
+                    put("full", DateFormat.FULL);
+                    put("long", DateFormat.LONG);
+                    put("medium", DateFormat.MEDIUM);
+                    put("short", DateFormat.SHORT);
+                }
+            };
+        }
+
+        @Override
+        public CharSequence apply(Object value, Options options) throws IOException {
+            Date date = new Date((long)value);
+            final DateFormat dateFormat;
+            Object pattern = options.param(0, options.hash("format", "medium"));
+            Integer style = styles.get(pattern);
+            if (style == null)
+                dateFormat = new SimpleDateFormat(pattern.toString(), Locale.getDefault());
+            else
+                dateFormat = DateFormat.getDateInstance(style, Locale.getDefault());
+
+            Object tz = options.hash("tz");
+            if (tz != null) {
+                final TimeZone timeZone = tz instanceof TimeZone ? (TimeZone) tz : TimeZone.getTimeZone(tz.toString());
+                dateFormat.setTimeZone(timeZone);
+            }
+            return dateFormat.format(date);
+        }
     }
 }

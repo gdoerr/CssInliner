@@ -12,8 +12,11 @@ buildscript {
     }
     dependencies {
         classpath 'ch.raffael.pegdown-doclet:pegdown-doclet:1.2'
-        classpath 'com.moowork.gradle:gradle-node-plugin:0.11'
     }
+}
+
+plugins {
+    id "com.moowork.node" version "1.0.0"
 }
 
 apply plugin: 'ch.raffael.pegdown-doclet'
@@ -21,7 +24,6 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'idea'
 apply plugin: 'application'
-apply plugin: 'com.moowork.node'
 
 sourceCompatibility = '1.8'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
@@ -36,11 +38,9 @@ dependencies {
     compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.6.4"
     compile "org.glassfish.jersey.containers:jersey-container-grizzly2-http:+"
 
+    compile "ws.doerr.projects.emailtemplates:EmailTemplateLibrary:0.1.1"
     compile "org.glassfish.grizzly:grizzly-websockets-server:2.3.22"
 
-    compile "org.jsoup:jsoup:1.7.2"
-    compile "net.htmlparser.jericho:jericho-html:3.4"
-    compile 'net.sourceforge.cssparser:cssparser:0.9.18'
     compile "com.github.jknack:handlebars:4.0.1"
     compile "com.github.jknack:handlebars-jackson2:4.0.1"
     compile "com.google.guava:guava:19.0"
@@ -95,15 +95,20 @@ startScripts {
 
 // Defaults for Node
 node {
-    workDir = file('temp')
-    nodeModulesDir = file('src/main/resources')
-    download = true;
+    workDir = file("${project.projectDir}/src/main/resources")
+    nodeModulesDir = file("${project.projectDir}/src/main/resources")
+    npmWorkDir = file("${project.projectDir}/src/main/resources")
+    download = false;
 }
 
-task webpack(type: NodeTask) {
-    workingDir 'src/main/resources'
+//build.dependsOn npm_install
 
-    script = file('src/main/resources/node_modules/.bin/webpack')
+
+task webpack(dependsOn: 'npmInstall', type: NpmTask) {
+    args = ['run', 'webpack']
+    execOverrides {
+        it.workingDir = 'src/main/resources'
+    }
 }
 
 // Copy launch scripts for the fatjar
@@ -140,7 +145,7 @@ run {
 }
 
 task(debug, dependsOn: ['classes'], type: RunWebpackDebug) {
-    args '-i', 'G:\\github\\ClearContract\\MandrillTemplates\\src\\main\\java', '-d', 'G:\\github\\ClearContract\\MandrillTemplates\\test\\data'
+    args '-i', 'G:\\github\\Credico-AW-Server\\aw-server\\src\\main\\java\\com\\credico\\email\\templates', '-d', 'G:\\github\\Credico-AW-Server\\aw-server\\src\\test\\resources'
 
     classpath = sourceSets.main.runtimeClasspath
     main = 'ws.doerr.cssinliner.Launcher'
@@ -175,10 +180,8 @@ class RunWebpackDebug extends JavaExec {
                     // kill the process when we're done with it. This way, we can kill webpack
                     // once the user exits the server
                     process = new ProcessBuilder(
-                                'node',
-                                '-i',
-                                'node_modules/webpack/bin/webpack.js',
-                                '--watch', '-color')
+                                'npm',
+                                'webpack-debug')
                             .directory(new File("${projectPath}/src/main/resources"))
                             .redirectErrorStream(true)
                             .start()
@@ -206,6 +209,5 @@ class RunWebpackDebug extends JavaExec {
 
         // Stop webpack...
         t.stop();
-        process.destroy()
     }
 }
