@@ -28,7 +28,8 @@ package ws.doerr.configuration;
  * @author greg
  */
 public class InsufficientArgumentsException extends ConfigurationException {
-
+    static final long serialVersionUID = 1L;
+    
     public InsufficientArgumentsException(String message, Object... args) {
         super(message, args);
     }

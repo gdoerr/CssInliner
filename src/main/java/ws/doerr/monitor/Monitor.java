@@ -107,6 +107,7 @@ public class Monitor {
                         if(ev.kind() == OVERFLOW)
                             return;
 
+                        @SuppressWarnings("unchecked")
                         WatchEvent<Path> event = (WatchEvent<Path>) ev;
 
                         Path path = folder.resolve(event.context());

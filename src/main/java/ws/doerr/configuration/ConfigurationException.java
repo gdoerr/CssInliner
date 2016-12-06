@@ -30,6 +30,7 @@ import java.text.MessageFormat;
  * @author greg
  */
 public class ConfigurationException extends Exception {
+    static final long serialVersionUID = 1L;
 
     public ConfigurationException(String message, Object... args) {
         super(MessageFormat.format(message, args));

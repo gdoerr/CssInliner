@@ -28,7 +28,8 @@ package ws.doerr.configuration;
  * @author greg
  */
 public class ConfigItemException extends ConfigurationException {
-
+    static final long serialVersionUID = 1L;
+    
     public ConfigItemException(String message, Object... args) {
         super(message, args);
     }

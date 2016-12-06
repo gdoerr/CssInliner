@@ -35,6 +35,7 @@ import java.io.IOException;
 public class MandrillIf implements Helper<Object> {
 
     @Override
+    @SuppressWarnings("fallthrough")
     public CharSequence apply(Object context, Options options) throws IOException {
         Buffer buffer = options.buffer();
 

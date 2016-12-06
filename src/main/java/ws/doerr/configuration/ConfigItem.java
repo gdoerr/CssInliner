@@ -126,6 +126,7 @@ class ConfigItem {
             } else if(field.getType().isAssignableFrom(String.class)) {
                 field.set(container, value);
             } else if(Collection.class.isAssignableFrom(field.getType())) {
+                @SuppressWarnings("unchecked")
                 Collection<String> f = (Collection<String>) field.get(container);
 
                 if(splitIfCollection) {
@@ -172,6 +173,7 @@ class ConfigItem {
             } else if(field.getType().isAssignableFrom(String.class)) {
                 return (String)field.get(container);
             } else if(Collection.class.isAssignableFrom(field.getType())) {
+                @SuppressWarnings("unchecked")
                 Collection<String> f = (Collection<String>) field.get(container);
                 return Joiner.on(',').join(f);
             }

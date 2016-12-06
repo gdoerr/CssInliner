@@ -33,7 +33,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import ws.doerr.configuration.Configuration;
 import ws.doerr.cssinliner.server.InlinerApp;
-import ws.doerr.projects.emailtemplates.CssInliner;
+import ws.doerr.projects.emailtemplates.TemplateProcessor;
 
 /**
  *
@@ -103,7 +103,7 @@ public class Launcher {
     }
 
     private static void runInline(MainConfiguration config) {
-            CssInliner inliner = new CssInliner();
+            TemplateProcessor processor = new TemplateProcessor();
 
             Set<String> sources = new HashSet<>(Configuration.getUnhandled());
 
@@ -128,7 +128,7 @@ public class Launcher {
                     if(!config.outputPath.isEmpty())
                         dest = Paths.get(config.outputPath, src.getFileName().toString());
 
-                    inliner.process(src, dest);
+                    processor.process(src, dest);
                 } catch(Exception ex) {
                     ex.printStackTrace();
                 }

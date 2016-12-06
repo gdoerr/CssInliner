@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import ws.doerr.projects.emailtemplates.Dependency;
-import ws.doerr.projects.emailtemplates.InlinerContext;
+import ws.doerr.projects.emailtemplates.ProcessorContext;
 
 /**
  *
@@ -83,7 +83,7 @@ public class SourceInstance {
         return id;
     }
 
-    public void update(InlinerContext context) throws IOException {
+    public void update(ProcessorContext context) throws IOException {
         errors.clear();
 
         dependencies.clear();

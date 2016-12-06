@@ -61,8 +61,8 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ws.doerr.cssinliner.email.EmailService;
-import ws.doerr.projects.emailtemplates.CssInliner;
-import ws.doerr.projects.emailtemplates.InlinerContext;
+import ws.doerr.projects.emailtemplates.ProcessorContext;
+import ws.doerr.projects.emailtemplates.TemplateProcessor;
 
 /**
  *
@@ -73,7 +73,7 @@ public class InlinerApp {
 
     private static InlinerApp instance;
 
-    private final CssInliner inliner = new CssInliner();
+    private final TemplateProcessor inliner = new TemplateProcessor();
     private final Handlebars handlebars;
 
     private MonitorHandler sourceHandler = new SourceHandler();
@@ -115,7 +115,7 @@ public class InlinerApp {
         for(File file : files) {
             try {
                 SourceInstance instance = new SourceInstance(file.toPath(), dataFolder, workingFolder.getPath());
-                InlinerContext context = inliner.process(instance.getSource(), instance.getInlined());
+                ProcessorContext context = inliner.process(instance.getSource(), instance.getInlined());
                 instance.update(context);
 
                 processHandlebars(instance);
@@ -165,7 +165,7 @@ public class InlinerApp {
                 SourceInstance instance = sources.get(id);
                 if(instance != null) {
                     try {
-                        InlinerContext context = inliner.process(instance.getSource(), instance.getInlined());
+                        ProcessorContext context = inliner.process(instance.getSource(), instance.getInlined());
                         instance.update(context);
                         processHandlebars(instance);
                         getDocumentTitle(instance);
@@ -279,8 +279,11 @@ public class InlinerApp {
     }
 
     private static class DateHelper implements Helper<Object> {
+        static final long serialVersionUID = 1L;
+
         private Map<String, Integer> styles;
 
+        @SuppressWarnings("serial")
         private DateHelper() {
             styles = new HashMap<String, Integer>() {
                 {

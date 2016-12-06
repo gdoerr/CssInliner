@@ -28,7 +28,8 @@ package ws.doerr.configuration;
  * @author greg
  */
 public class UnknownArgumentException extends ConfigurationException {
-
+    static final long serialVersionUID = 1L;
+    
     public UnknownArgumentException(String message, Object... args) {
         super(message, args);
     }
