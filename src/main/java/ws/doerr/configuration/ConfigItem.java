@@ -178,7 +178,7 @@ class ConfigItem {
                 return Joiner.on(',').join(f);
             }
         } catch(IllegalAccessException ex) {
-            String msg = MessageFormat.format("Exception setting value for {0}.{1}", container.getClass().getName(), field.getName());
+            String msg = MessageFormat.format("Exception getting value for {0}.{1}", container.getClass().getName(), field.getName());
             LOG.log(Level.WARNING, msg, ex);
         }
         return "";
