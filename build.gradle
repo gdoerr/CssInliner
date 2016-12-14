@@ -140,7 +140,8 @@ task fatjar(dependsOn: ['copyLauncher', 'jar'], type: Jar) {
 }
 
 run {
-    args '-h'
+    args '-i', '..\\Credico-AW-Server\\aw-server\\src\\main\\java\\com\\credico\\email\\templates', '-d', '..\\Credico-AW-Server\\aw-server\\src\\test\\resources'
+    //args '-h'
 
     classpath = sourceSets.main.runtimeClasspath
     main = 'ws.doerr.cssinliner.Launcher'
@@ -148,7 +149,7 @@ run {
 }
 
 task(debug, dependsOn: ['classes'], type: RunWebpackDebug) {
-    args '-i', 'G:\\github\\Credico-AW-Server\\aw-server\\src\\main\\java\\com\\credico\\email\\templates', '-d', 'G:\\github\\Credico-AW-Server\\aw-server\\src\\test\\resources'
+    args '-i', '..\\Credico-AW-Server\\aw-server\\src\\main\\java\\com\\credico\\email\\templates', '-d', '..\\Credico-AW-Server\\aw-server\\src\\test\\resources'
 
     classpath = sourceSets.main.runtimeClasspath
     main = 'ws.doerr.cssinliner.Launcher'
